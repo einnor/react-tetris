@@ -42,8 +42,9 @@ const Tetris = () => {
   };
 
   const dropPlayerAlongYAxis = () => {
-    if (!checkCollision(player, stage, { x: 0, y: 1 })) {}
-    updatePlayerPosition({ x: 0, y: 1, collided: false });
+    if (!checkCollision(player, stage, { x: 0, y: 1 })) {
+      updatePlayerPosition({ x: 0, y: 1, collided: false });
+    }
   };
 
 
