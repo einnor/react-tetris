@@ -4,6 +4,7 @@ import Stage from './Stage';
 import Display from './Display';
 import StartButton from './StartButton';
 
+import { createStage } from '../gameHelpers';
 import { usePlayer } from '../hooks/usePlayer';
 import { useStage } from '../hooks/useStage';
 
@@ -15,8 +16,28 @@ const Tetris = () => {
 
   const [player] = usePlayer();
   const [stage, setStage] = useStage(player);
+
+  const move = ({ keyCode }) => {
+    if (!gameOver) {
+      if (keyCode === 37) { // Left arrow
+        movePlayer(-1); // Move one step to the left on the x-axis
+      } else if (keyCode === 39) { // Right arrow
+        movePlayer(1); // Move one step to the right on the x-axis
+      } else if (keyCode === 38) { // Down arrow
+        dropPlayer(); // Drop the player
+      }
+    }
+  };
+
+  const movePlayer = (direction) => {};
+
+  const drop = () => {};
+
+  const dropPlayer = () => {};
+
+
   return (
-    <StyledTetrisWrapper>
+    <StyledTetrisWrapper role="button" tabIndex={0} onKeyDown={(e) => move(e)}>
       <StyledTetris>
         <Stage stage={stage} />
         <aside>
