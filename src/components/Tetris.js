@@ -14,26 +14,38 @@ const Tetris = () => {
   const [dropTime, setDropTime] = useState(null);
   const [gameOver, setGameOver] = useState(false);
 
-  const [player] = usePlayer();
+  const [player, updatePlayerPosition, resetPlayer] = usePlayer();
   const [stage, setStage] = useStage(player);
+
+  const startGame = () => {
+    // Reset everything;
+    setStage(createStage());
+    resetPlayer();
+  };
 
   const move = ({ keyCode }) => {
     if (!gameOver) {
       if (keyCode === 37) { // Left arrow
-        movePlayer(-1); // Move one step to the left on the x-axis
+        movePlayerAlongXAxis(-1); // Move one step to the left on the x-axis
       } else if (keyCode === 39) { // Right arrow
-        movePlayer(1); // Move one step to the right on the x-axis
+        movePlayerAlongXAxis(1); // Move one step to the right on the x-axis
       } else if (keyCode === 38) { // Down arrow
         dropPlayer(); // Drop the player
       }
     }
   };
 
-  const movePlayer = (direction) => {};
+  const movePlayerAlongXAxis = (direction) => {
+    updatePlayerPosition({ x: direction, y: 0 });
+  };
 
-  const drop = () => {};
+  const drop = () => {
+    updatePlayerPosition({ x: 0, y: 1, collided: false });
+  };
 
-  const dropPlayer = () => {};
+  const dropPlayer = () => {
+    drop();
+  };
 
 
   return (
@@ -52,7 +64,7 @@ const Tetris = () => {
               </div>
             )
           }
-          <StartButton />
+          <StartButton onClick={startGame} />
         </aside>
       </StyledTetris>
     </StyledTetrisWrapper>
