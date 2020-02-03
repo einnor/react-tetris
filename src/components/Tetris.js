@@ -4,7 +4,7 @@ import Stage from './Stage';
 import Display from './Display';
 import StartButton from './StartButton';
 
-import { createStage } from '../gameHelpers';
+import { createStage, checkCollision } from '../gameHelpers';
 import { usePlayer } from '../hooks/usePlayer';
 import { useStage } from '../hooks/useStage';
 
@@ -30,21 +30,20 @@ const Tetris = () => {
       } else if (keyCode === 39) { // Right arrow
         movePlayerAlongXAxis(1); // Move one step to the right on the x-axis
       } else if (keyCode === 40) { // Down arrow
-        dropPlayer(); // Drop the player
+        dropPlayerAlongYAxis(); // Drop the player
       }
     }
   };
 
   const movePlayerAlongXAxis = (direction) => {
-    updatePlayerPosition({ x: direction, y: 0 });
+    if (!checkCollision(player, stage, { x: direction, y: 0 })) {
+      updatePlayerPosition({ x: direction, y: 0 });
+    }
   };
 
-  const drop = () => {
+  const dropPlayerAlongYAxis = () => {
+    if (!checkCollision(player, stage, { x: 0, y: 1 })) {}
     updatePlayerPosition({ x: 0, y: 1, collided: false });
-  };
-
-  const dropPlayer = () => {
-    drop();
   };
 
 
