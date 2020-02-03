@@ -92,8 +92,6 @@ const Tetris = () => {
     dropPlayerAlongYAxis();
   }, dropTime);
 
-  console.log('re-rendered');
-
   return (
     <StyledTetrisWrapper role="button" tabIndex={0} onKeyDown={move} onKeyUp={keyUp}>
       <StyledTetris>
