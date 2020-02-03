@@ -20,7 +20,7 @@ export const usePlayer = () => {
     return rotatedTetro.reverse();
   };
 
-  const playerRotate = (stage, direction) => {
+  const rotatePlayer = (stage, direction) => {
     const clonedPlayer = JSON.parse(JSON.stringify(player));
     clonedPlayer.tetromino = rotate(clonedPlayer.tetromino, direction);
 
@@ -54,5 +54,5 @@ export const usePlayer = () => {
     })
   }, [])
 
-  return [player, updatePlayerPosition, resetPlayer];
+  return [player, updatePlayerPosition, resetPlayer, rotatePlayer];
 };
