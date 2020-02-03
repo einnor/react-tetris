@@ -8,6 +8,7 @@ import { createStage, checkCollision } from '../gameHelpers';
 import { useInterval } from '../hooks/useInterval';
 import { usePlayer } from '../hooks/usePlayer';
 import { useStage } from '../hooks/useStage';
+import { useGameStatus } from '../hooks/useGameStatus';
 
 import { StyledTetrisWrapper, StyledTetris } from './styles/StyledTetris';
 
@@ -17,6 +18,7 @@ const Tetris = () => {
 
   const [player, updatePlayerPosition, resetPlayer, rotatePlayer] = usePlayer();
   const [stage, setStage, rowsCleared] = useStage(player, resetPlayer);
+  const [score, setScore, rows, setRows, level, setLevel] = useGameStatus(rowsCleared);
 
   const startGame = () => {
     // Reset everything;
@@ -24,6 +26,9 @@ const Tetris = () => {
     setDropTime(1000);
     resetPlayer();
     setGameOver(false);
+    setScore(0);
+    setLevel(0);
+    setRows(0);
   };
 
   const move = ({ keyCode }) => {
@@ -54,6 +59,13 @@ const Tetris = () => {
   }
 
   const dropPlayerAlongYAxis = () => {
+    if (rows > (level + 1) * 10) {
+      // Increase the level
+      setLevel((prev) => prev + 1);
+
+      // Increase the speed
+      setDropTime(1000 / (level + 1) + 200);
+    }
     if (!checkCollision(player, stage, { x: 0, y: 1 })) {
       updatePlayerPosition({ x: 0, y: 1, collided: false });
     } else {
@@ -71,7 +83,7 @@ const Tetris = () => {
     if (!gameOver) {
       if (keyCode === 40) {
         // Start interval
-        setDropTime(1000);
+        setDropTime(1000 / (level + 1) + 200);
       }
     }
   };
@@ -92,9 +104,9 @@ const Tetris = () => {
               <Display gameOver={gameOver} text="Game Over" />
             ) : (
               <div>
-                <Display text="Score" />
-                <Display text="Rows" />
-                <Display text="Level" />
+                <Display text={`Score: ${score}`} />
+                <Display text={`Rows: ${rows}`}/>
+                <Display text={`Level: ${level}`}/>
               </div>
             )
           }
