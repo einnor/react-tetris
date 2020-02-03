@@ -5,6 +5,7 @@ import Display from './Display';
 import StartButton from './StartButton';
 
 import { createStage, checkCollision } from '../gameHelpers';
+import { useInterval } from '../hooks/useInterval';
 import { usePlayer } from '../hooks/usePlayer';
 import { useStage } from '../hooks/useStage';
 
@@ -15,11 +16,12 @@ const Tetris = () => {
   const [gameOver, setGameOver] = useState(false);
 
   const [player, updatePlayerPosition, resetPlayer, rotatePlayer] = usePlayer();
-  const [stage, setStage] = useStage(player, resetPlayer);
+  const [stage, setStage, rowsCleared] = useStage(player, resetPlayer);
 
   const startGame = () => {
     // Reset everything;
     setStage(createStage());
+    setDropTime(1000);
     resetPlayer();
     setGameOver(false);
   };
@@ -31,7 +33,7 @@ const Tetris = () => {
       } else if (keyCode === 39) { // Right arrow
         movePlayerAlongXAxis(1); // Move one step to the right on the x-axis
       } else if (keyCode === 40) { // Down arrow
-        dropPlayerAlongYAxis(); // Drop the player
+        dropPlayerAlongYAxisByUser(); // Drop the player
       } else if (keyCode === 38) { // Up arrow
         rotatePlayer(stage, 1); // Rotate the player clockwise
       }
@@ -43,6 +45,13 @@ const Tetris = () => {
       updatePlayerPosition({ x: direction, y: 0 });
     }
   };
+
+  const dropPlayerAlongYAxisByUser = () => {
+    // Clear interval
+    setDropTime(null);
+
+    dropPlayerAlongYAxis();
+  }
 
   const dropPlayerAlongYAxis = () => {
     if (!checkCollision(player, stage, { x: 0, y: 1 })) {
@@ -58,11 +67,23 @@ const Tetris = () => {
     }
   };
 
+  const keyUp = ({ keyCode }) => {
+    if (!gameOver) {
+      if (keyCode === 40) {
+        // Start interval
+        setDropTime(1000);
+      }
+    }
+  };
+
+  useInterval(() => {
+    dropPlayerAlongYAxis();
+  }, dropTime);
+
   console.log('re-rendered');
 
-
   return (
-    <StyledTetrisWrapper role="button" tabIndex={0} onKeyDown={(e) => move(e)}>
+    <StyledTetrisWrapper role="button" tabIndex={0} onKeyDown={move} onKeyUp={keyUp}>
       <StyledTetris>
         <Stage stage={stage} />
         <aside>
