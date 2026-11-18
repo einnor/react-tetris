@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/einnor/react-tetris/actions/workflows/ci.yml/badge.svg)](https://github.com/einnor/react-tetris/actions/workflows/ci.yml)
 
-A keyboard-controlled falling-block game built with React, custom hooks and styled-components. A small learning project for exploring collision detection, immutable state transitions and timer-driven rendering, now running on React 19 and Vite.
+A falling-block game built with **React 19, strict TypeScript, Vite and styled-components**. The game rules run in a deterministic, framework-independent engine; React owns rendering, input and a single gravity clock.
 
 ![A real game in progress, captured from the local application](screenshots/gameplay.png)
 
@@ -28,11 +28,11 @@ Open the localhost URL printed by Vite, then select **Start Game**. The game rec
 
 ## Engineering walkthrough
 
-- `usePlayer` owns piece position, rotation and spawning. Movement preserves previous state snapshots rather than mutating them.
-- `gameHelpers.js` defines the 12-by-20 board and checks walls, floor and merged cells before movement.
-- `useStage` draws the active piece, merges landed pieces and removes complete rows.
-- `useGameStatus` scores each line-clear event once. Re-rendering or advancing a level must not score the same event again.
-- `useInterval` separates timer lifecycle from the latest drop callback. Speed increases after each ten cleared rows.
+- `src/game/engine.ts` owns pure, atomic transitions: movement, rotation, locking, row clearing, scoring, spawning and terminal state.
+- The settled board and active piece are separate. Rendering projects the active piece without mutating the board.
+- A lock clears rows, scores at the pre-clear level and checks the next spawn in one transition. Level is derived from total rows, not maintained by another effect.
+- `useGame` adapts reducer state to React and owns the gravity interval. Soft dropping never disables gravity or depends on receiving a later key-up event.
+- Random state is explicit. Add `?seed=12345` to the URL for a reproducible round; the same seed and action sequence produce the same state. Invalid seeds fall back to a newly generated round seed.
 
 The UI and game rules are deliberately kept separate enough to exercise collision and state regressions without a browser. This is a compact hook-based implementation, not a complete implementation of the official Tetris rules.
 
@@ -40,11 +40,12 @@ The UI and game rules are deliberately kept separate enough to exercise collisio
 
 ```sh
 npm test
+npm run typecheck
 npm run build
 npm run preview
 ```
 
-Vitest and Testing Library cover line-clear scoring, level-change regressions, immutable movement, collisions and keyboard focus. GitHub Actions runs tests and a production build on Node.js 24. Vite emits a static site in `dist/`; the relative asset base also supports subdirectory hosting.
+Vitest and Testing Library cover collision boundaries, single-to-four-line clears, scoring across level changes, immutable snapshots, blocked spawning, rotation, seeded replay, keyboard focus and Strict Mode timer ownership. GitHub Actions runs tests and a strict production build on Node.js 24. Vite emits a static site in `dist/`; the relative asset base also supports subdirectory hosting.
 
 ## Scope and trade-offs
 
