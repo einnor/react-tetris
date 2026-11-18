@@ -23,8 +23,13 @@ Open the localhost URL printed by Vite, then select **Start Game**. The game rec
 | --- | --- |
 | Left / right | Move the active piece |
 | Up | Rotate clockwise, with horizontal collision adjustment |
-| Down | Soft drop; releasing resumes the timer |
+| Down | Soft drop without disabling gravity |
+| Space | Hard drop and lock the active piece |
+| P | Pause or resume |
+| Escape | Pause |
 | Start Game | Start or reset the board, score and level |
+
+The game pauses when focus leaves the game, its browser window loses focus, or the document becomes hidden. Returning does not silently restart gravity: choose **Resume game** or press **P**. Narrow layouts provide on-screen move/rotate/drop buttons.
 
 ## Engineering walkthrough
 
@@ -49,7 +54,7 @@ Vitest and Testing Library cover collision boundaries, single-to-four-line clear
 
 ## Scope and trade-offs
 
-No backend, persistence or analytics: game state lives entirely in memory. Desktop keyboard input is the supported control scheme; touch controls, pause/resume, next-piece preview, seeded replays and a standard rotation system are not implemented. The original visual assets and learning-project identity are preserved rather than presenting this as a commercial game.
+No backend, persistence or analytics: game state lives entirely in memory and reloading loses the current round. Keyboard and narrow-screen button controls are supported. Rotation uses horizontal collision adjustment, not the official rotation system; there is no next-piece preview, seven-piece bag, hold mechanic, lock delay or competitive scoring service. Replay seeds reproduce piece generation; reproducing an entire round also requires the same timed action sequence. The original visual assets and learning-project identity are preserved rather than presenting this as a commercial game.
 
 The screenshot above was captured from the running app with real keyboard input, without injected game state. Older screenshots remain in `screenshots/` as historical assets.
 

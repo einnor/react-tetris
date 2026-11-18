@@ -1,4 +1,4 @@
-import { useCallback, useReducer } from 'react';
+import { useCallback, useEffect, useReducer } from 'react';
 import { createInitialState, gameReducer, getDropDelay, projectBoard } from '../game/engine';
 import { useInterval } from './useInterval';
 
@@ -9,5 +9,15 @@ export function useGame(seed?: number) {
     dispatch({ type: 'start', seed: roundSeed });
   }, [seed]);
   useInterval(() => dispatch({ type: 'step' }), state.status === 'running' ? getDropDelay(state.rows) : null);
+  useEffect(() => {
+    const pause = () => dispatch({ type: 'pause' });
+    const visibilityChanged = () => { if (document.visibilityState === 'hidden') pause(); };
+    window.addEventListener('blur', pause);
+    document.addEventListener('visibilitychange', visibilityChanged);
+    return () => {
+      window.removeEventListener('blur', pause);
+      document.removeEventListener('visibilitychange', visibilityChanged);
+    };
+  }, []);
   return { state, stage: projectBoard(state.board, state.active), dispatch, start };
 }
