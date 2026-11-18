@@ -52,6 +52,15 @@ npm run preview
 
 Vitest and Testing Library cover collision boundaries, single-to-four-line clears, scoring across level changes, immutable snapshots, blocked spawning, rotation, seeded replay, keyboard focus and Strict Mode timer ownership. GitHub Actions runs tests and a strict production build on Node.js 24. Vite emits a static site in `dist/`; the relative asset base also supports subdirectory hosting.
 
+For production-browser checks:
+
+```sh
+npx playwright install chromium
+npm run test:e2e
+```
+
+Playwright builds and serves a fresh production app, then exercises keyboard/gravity interaction, pause/resume, focus loss, reproducible restarts, terminal-state input and narrow-screen pointer controls. It checks overflow at 320, 360 and 430 pixels and runs axe on running/paused views. These are desktop/mobile-sized Chromium checks, not a claim of full screen-reader accessibility or real-device compatibility. CI retains screenshots and traces when browser tests fail.
+
 ## Scope and trade-offs
 
 No backend, persistence or analytics: game state lives entirely in memory and reloading loses the current round. Keyboard and narrow-screen button controls are supported. Rotation uses horizontal collision adjustment, not the official rotation system; there is no next-piece preview, seven-piece bag, hold mechanic, lock delay or competitive scoring service. Replay seeds reproduce piece generation; reproducing an entire round also requires the same timed action sequence. The original visual assets and learning-project identity are preserved rather than presenting this as a commercial game.
