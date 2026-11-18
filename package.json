@@ -6,7 +6,8 @@
   "engines": { "node": ">=22.12.0" },
   "scripts": {
     "start": "vite --host 127.0.0.1",
-    "build": "vite build",
+    "typecheck": "tsc --noEmit",
+    "build": "npm run typecheck && vite build",
     "preview": "vite preview --host 127.0.0.1",
     "test": "vitest run",
     "test:watch": "vitest"
@@ -17,10 +18,14 @@
     "styled-components": "^6.1.19"
   },
   "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
     "@vitejs/plugin-react": "^5.1.0",
     "jsdom": "^27.2.0",
+    "typescript": "^7.0.2",
     "vite": "^7.2.2",
     "vitest": "^4.0.8"
   }
