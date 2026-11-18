@@ -19,19 +19,23 @@ npm start
 
 Open the localhost URL printed by Vite, then select **Start Game**. The game receives keyboard focus automatically.
 
-| Key          | Action                                                 |
-| ------------ | ------------------------------------------------------ |
-| Left / right | Move the active piece                                  |
-| Up           | Rotate clockwise, with horizontal collision adjustment |
-| Down         | Soft drop without disabling gravity                    |
-| Space        | Hard drop and lock the active piece                    |
-| P            | Pause or resume                                        |
-| Escape       | Pause                                                  |
-| Start Game   | Start or reset the board, score and level              |
+| Key                  | Action                                                 |
+| -------------------- | ------------------------------------------------------ |
+| Left / right         | Move the active piece                                  |
+| Up                   | Rotate clockwise, with horizontal collision adjustment |
+| Down                 | Soft drop without disabling gravity                    |
+| Space                | Hard drop and lock the active piece                    |
+| P                    | Pause or resume                                        |
+| Escape               | Pause                                                  |
+| Start / Restart Game | Reset the board, score and level                       |
 
 The game pauses when focus leaves the game, its browser window loses focus, or the document becomes hidden. Returning does not silently restart gravity: choose **Resume game** or press **P**. Narrow layouts provide on-screen move/rotate/drop buttons.
 
+![The current narrow-screen game with on-screen controls](screenshots/mobile.png)
+
 ## Engineering walkthrough
+
+See [Architecture and engineering decisions](docs/architecture.md) for state ownership, transition ordering, determinism, timing policies and verification boundaries.
 
 - `src/game/engine.ts` owns pure, atomic transitions: movement, rotation, locking, row clearing, scoring, spawning and terminal state.
 - The settled board and active piece are separate. Rendering projects the active piece without mutating the board.
@@ -68,6 +72,6 @@ Playwright builds and serves a fresh production app, then exercises keyboard/gra
 
 No backend, persistence or analytics: game state lives entirely in memory and reloading loses the current round. Keyboard and narrow-screen button controls are supported. Rotation uses horizontal collision adjustment, not the official rotation system; there is no next-piece preview, seven-piece bag, hold mechanic, lock delay or competitive scoring service. Replay seeds reproduce piece generation; reproducing an entire round also requires the same timed action sequence. The original visual assets and learning-project identity are preserved rather than presenting this as a commercial game.
 
-The screenshot above was captured from the running app with real keyboard input, without injected game state. Older screenshots remain in `screenshots/` as historical assets.
+The current screenshots were captured from the running app with real keyboard/touch actions and a reproducible seed, without injecting game state. Gravity was held during capture to keep the images stable. Older screenshots remain in `screenshots/` as historical assets.
 
 Tetris is a trademark of its respective owners; this personal learning project is unaffiliated.
