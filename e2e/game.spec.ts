@@ -1,7 +1,9 @@
 import AxeBuilder from '@axe-core/playwright';
 import { boardColors, expect, openGame, test } from './fixtures';
 
-test('keyboard movement, soft drop, gravity and explicit pause/resume work together', async ({ page }) => {
+test('keyboard movement, soft drop, gravity and explicit pause/resume work together', async ({
+  page,
+}) => {
   await openGame(page);
   const first = await boardColors(page);
   await page.keyboard.press('ArrowRight');
@@ -18,7 +20,9 @@ test('keyboard movement, soft drop, gravity and explicit pause/resume work toget
   await page.getByRole('button', { name: 'Resume game' }).click();
   await page.clock.runFor(1000);
   await expect.poll(() => boardColors(page)).not.toEqual(paused);
-  await page.evaluate(() => { if (document.activeElement instanceof HTMLElement) document.activeElement.blur(); });
+  await page.evaluate(() => {
+    if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
+  });
   await expect(page.getByRole('status')).toContainText('Game paused');
   await page.getByRole('region', { name: 'Tetris game' }).focus();
   await expect(page.getByRole('status')).toContainText('Game paused');
@@ -47,21 +51,28 @@ test('restarts replay the same seed and terminal games reject further input', as
   await expect(page.getByRole('status')).toContainText('Game running');
 });
 
-test('narrow layouts support on-screen pointer controls without horizontal overflow', async ({ page }, info) => {
+test('narrow layouts support on-screen pointer controls without horizontal overflow', async ({
+  page,
+}, info) => {
   await page.setViewportSize({ width: 320, height: 900 });
   await openGame(page);
   const first = await boardColors(page);
   const left = page.getByRole('button', { name: 'Move left', exact: true });
-  if (info.project.name === 'mobile') await left.tap(); else await left.click();
+  if (info.project.name === 'mobile') await left.tap();
+  else await left.click();
   expect(await boardColors(page)).not.toEqual(first);
   const moved = await boardColors(page);
   await page.getByRole('button', { name: 'Rotate piece', exact: true }).click();
   expect(await boardColors(page)).not.toEqual(moved);
   await page.getByRole('button', { name: 'Hard drop', exact: true }).click();
-  expect((await boardColors(page)).filter(color => color.replace(/\s/g, '') !== 'rgba(0,0,0,0.8)')).toHaveLength(8);
+  expect(
+    (await boardColors(page)).filter((color) => color.replace(/\s/g, '') !== 'rgba(0,0,0,0.8)'),
+  ).toHaveLength(8);
   for (const width of [320, 360, 430]) {
     await page.setViewportSize({ width, height: 900 });
-    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+      true,
+    );
     await expect(page.getByRole('button', { name: 'Rotate piece', exact: true })).toBeVisible();
   }
 });
@@ -71,7 +82,11 @@ test('running and paused controls pass automated WCAG A/AA checks', async ({ pag
   await page.clock.resume();
   for (const paused of [false, true]) {
     if (paused) await page.keyboard.press('p');
-    const audit = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze();
-    expect(audit.violations.map(({ id, nodes }) => ({ id, targets: nodes.map(node => node.target) }))).toEqual([]);
+    const audit = await new AxeBuilder({ page })
+      .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+      .analyze();
+    expect(
+      audit.violations.map(({ id, nodes }) => ({ id, targets: nodes.map((node) => node.target) })),
+    ).toEqual([]);
   }
 });

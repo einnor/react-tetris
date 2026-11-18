@@ -35,7 +35,12 @@ export const createBoard = (): Board =>
   Array.from({ length: BOARD_HEIGHT }, () => Array<CellValue>(BOARD_WIDTH).fill(0));
 
 export const createInitialState = (): GameState => ({
-  board: createBoard(), active: null, status: 'idle', score: 0, rows: 0, randomState: 0,
+  board: createBoard(),
+  active: null,
+  status: 'idle',
+  score: 0,
+  rows: 0,
+  randomState: 0,
 });
 
 export const getLevel = (rows: number) => Math.floor(rows / 10);
@@ -43,26 +48,28 @@ export const getDropDelay = (rows: number) =>
   getLevel(rows) === 0 ? 1000 : 1000 / (getLevel(rows) + 1) + 200;
 
 export function canPlace(board: Board, piece: ActivePiece): boolean {
-  return piece.shape.every((row, y) => row.every((value, x) =>
-    value === 0 || board[piece.y + y]?.[piece.x + x] === 0,
-  ));
+  return piece.shape.every((row, y) =>
+    row.every((value, x) => value === 0 || board[piece.y + y]?.[piece.x + x] === 0),
+  );
 }
 
 export function projectBoard(board: Board, piece: ActivePiece | null): Board {
   if (!piece) return board;
-  const result = board.map(row => [...row]);
-  piece.shape.forEach((row, y) => row.forEach((value, x) => {
-    const target = result[piece.y + y];
-    if (value !== 0 && target && piece.x + x >= 0 && piece.x + x < BOARD_WIDTH) {
-      target[piece.x + x] = value;
-    }
-  }));
+  const result = board.map((row) => [...row]);
+  piece.shape.forEach((row, y) =>
+    row.forEach((value, x) => {
+      const target = result[piece.y + y];
+      if (value !== 0 && target && piece.x + x >= 0 && piece.x + x < BOARD_WIDTH) {
+        target[piece.x + x] = value;
+      }
+    }),
+  );
   return result;
 }
 
 function spawn(state: GameState): GameState {
   const randomState = (Math.imul(state.randomState, 1664525) + 1013904223) >>> 0;
-  const kind = PIECE_KINDS[Math.floor(randomState / 0x100000000 * PIECE_KINDS.length)] ?? 'I';
+  const kind = PIECE_KINDS[Math.floor((randomState / 0x100000000) * PIECE_KINDS.length)] ?? 'I';
   const shape = PIECES[kind].shape;
   const active = { kind, shape, x: Math.floor((BOARD_WIDTH - (shape[0]?.length ?? 0)) / 2), y: 0 };
   return canPlace(state.board, active)
@@ -72,7 +79,7 @@ function spawn(state: GameState): GameState {
 
 function lock(state: GameState, active: ActivePiece): GameState {
   const merged = projectBoard(state.board, active);
-  const remaining = merged.filter(row => row.some(value => value === 0));
+  const remaining = merged.filter((row) => row.some((value) => value === 0));
   const cleared = BOARD_HEIGHT - remaining.length;
   const board = [
     ...Array.from({ length: cleared }, () => Array<CellValue>(BOARD_WIDTH).fill(0)),
@@ -80,22 +87,26 @@ function lock(state: GameState, active: ActivePiece): GameState {
   ];
   const points = [0, 40, 100, 300, 1200][cleared] ?? 0;
   return spawn({
-    ...state, board, active: null,
+    ...state,
+    board,
+    active: null,
     rows: state.rows + cleared,
     score: state.score + points * (getLevel(state.rows) + 1),
   });
 }
 
 function rotate(shape: Matrix): Matrix {
-  return shape.map((_, x) => shape.map(row => row[x] ?? 0).reverse());
+  return shape.map((_, x) => shape.map((row) => row[x] ?? 0).reverse());
 }
 
 export function gameReducer(state: GameState, action: GameAction): GameState {
   if (action.type === 'start') {
     return spawn({ ...createInitialState(), randomState: action.seed >>> 0 });
   }
-  if (action.type === 'pause') return state.status === 'running' ? { ...state, status: 'paused' } : state;
-  if (action.type === 'resume') return state.status === 'paused' ? { ...state, status: 'running' } : state;
+  if (action.type === 'pause')
+    return state.status === 'running' ? { ...state, status: 'paused' } : state;
+  if (action.type === 'resume')
+    return state.status === 'paused' ? { ...state, status: 'running' } : state;
   if (state.status !== 'running' || !state.active) return state;
   const active = state.active;
   switch (action.type) {
@@ -113,7 +124,9 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
     }
     case 'step': {
       const candidate = { ...active, y: active.y + 1 };
-      return canPlace(state.board, candidate) ? { ...state, active: candidate } : lock(state, active);
+      return canPlace(state.board, candidate)
+        ? { ...state, active: candidate }
+        : lock(state, active);
     }
     case 'hard-drop': {
       let candidate = active;

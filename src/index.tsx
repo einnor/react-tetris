@@ -8,4 +8,8 @@ import { readSeed } from './game/seed';
 const root = document.getElementById('root');
 if (!root) throw new Error('React Tetris requires a root element.');
 const seed = readSeed(window.location.search);
-createRoot(root).render(<StrictMode><App {...(seed === undefined ? {} : { seed })} /></StrictMode>);
+createRoot(root).render(
+  <StrictMode>
+    <App {...(seed === undefined ? {} : { seed })} />
+  </StrictMode>,
+);

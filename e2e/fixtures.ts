@@ -2,12 +2,15 @@ import { test as base, expect } from '@playwright/test';
 import type { Page } from '@playwright/test';
 
 export const test = base.extend<{ runtimeErrors: string[] }>({
-  runtimeErrors: [async ({ page }, use) => {
-    const errors: string[] = [];
-    page.on('pageerror', error => errors.push(error.message));
-    await use(errors);
-    expect(errors).toEqual([]);
-  }, { auto: true }],
+  runtimeErrors: [
+    async ({ page }, use) => {
+      const errors: string[] = [];
+      page.on('pageerror', (error) => errors.push(error.message));
+      await use(errors);
+      expect(errors).toEqual([]);
+    },
+    { auto: true },
+  ],
 });
 
 export { expect };
@@ -22,6 +25,9 @@ export async function openGame(page: Page) {
 }
 
 export function boardColors(page: Page) {
-  return page.getByRole('img', { name: 'Tetris playfield' }).evaluate(board =>
-    Array.from(board.children, cell => getComputedStyle(cell).backgroundColor));
+  return page
+    .getByRole('img', { name: 'Tetris playfield' })
+    .evaluate((board) =>
+      Array.from(board.children, (cell) => getComputedStyle(cell).backgroundColor),
+    );
 }

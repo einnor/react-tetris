@@ -19,15 +19,15 @@ npm start
 
 Open the localhost URL printed by Vite, then select **Start Game**. The game receives keyboard focus automatically.
 
-| Key | Action |
-| --- | --- |
-| Left / right | Move the active piece |
-| Up | Rotate clockwise, with horizontal collision adjustment |
-| Down | Soft drop without disabling gravity |
-| Space | Hard drop and lock the active piece |
-| P | Pause or resume |
-| Escape | Pause |
-| Start Game | Start or reset the board, score and level |
+| Key          | Action                                                 |
+| ------------ | ------------------------------------------------------ |
+| Left / right | Move the active piece                                  |
+| Up           | Rotate clockwise, with horizontal collision adjustment |
+| Down         | Soft drop without disabling gravity                    |
+| Space        | Hard drop and lock the active piece                    |
+| P            | Pause or resume                                        |
+| Escape       | Pause                                                  |
+| Start Game   | Start or reset the board, score and level              |
 
 The game pauses when focus leaves the game, its browser window loses focus, or the document becomes hidden. Returning does not silently restart gravity: choose **Resume game** or press **P**. Narrow layouts provide on-screen move/rotate/drop buttons.
 
@@ -45,6 +45,7 @@ The UI and game rules are deliberately kept separate enough to exercise collisio
 
 ```sh
 npm test
+npm run format:check
 npm run typecheck
 npm run build
 npm run preview
@@ -60,6 +61,8 @@ npm run test:e2e
 ```
 
 Playwright builds and serves a fresh production app, then exercises keyboard/gravity interaction, pause/resume, focus loss, reproducible restarts, terminal-state input and narrow-screen pointer controls. It checks overflow at 320, 360 and 430 pixels and runs axe on running/paused views. These are desktop/mobile-sized Chromium checks, not a claim of full screen-reader accessibility or real-device compatibility. CI retains screenshots and traces when browser tests fail.
+
+`npm run format` applies the shared style to current source, tests and documentation; generated output and original visual assets are excluded. CI rejects focused browser tests and fails flaky browser tests even when a retry passes.
 
 ## Scope and trade-offs
 

@@ -8,10 +8,15 @@ export function useGame(seed?: number) {
     const roundSeed = seed ?? crypto.getRandomValues(new Uint32Array(1))[0] ?? 0;
     dispatch({ type: 'start', seed: roundSeed });
   }, [seed]);
-  useInterval(() => dispatch({ type: 'step' }), state.status === 'running' ? getDropDelay(state.rows) : null);
+  useInterval(
+    () => dispatch({ type: 'step' }),
+    state.status === 'running' ? getDropDelay(state.rows) : null,
+  );
   useEffect(() => {
     const pause = () => dispatch({ type: 'pause' });
-    const visibilityChanged = () => { if (document.visibilityState === 'hidden') pause(); };
+    const visibilityChanged = () => {
+      if (document.visibilityState === 'hidden') pause();
+    };
     window.addEventListener('blur', pause);
     document.addEventListener('visibilitychange', visibilityChanged);
     return () => {

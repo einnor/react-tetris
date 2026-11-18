@@ -22,4 +22,4 @@ export const StyledStartButton = styled.button`
     cursor: not-allowed;
     opacity: 0.6;
   }
-`
+`;
